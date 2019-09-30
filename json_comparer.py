@@ -8,6 +8,14 @@ Quick script to compare to JSON files that might not necessarily be in the same 
 Input
 '''
 
+def ordered(obj):
+    if isinstance(obj, dict):
+        return sorted((k, ordered(v)) for k, v in obj.items())
+    if isinstance(obj, list):
+        return sorted(ordered(x) for x in obj)
+    else:
+        return obj
+
 
 if __name__ == "__main__":
     _, ref_filename, test_filename = sys.argv
@@ -15,7 +23,7 @@ if __name__ == "__main__":
         ref_json = json.load(ref)
         test_json = json.load(test)
 
-        print("JSON FILES ARE EQUAL." if sorted(ref_json.items()) == sorted(test_json.items()) \
+        print("JSON FILES ARE EQUAL." if ordered(ref_json) == ordered(test_json) \
                 else "JSON FILES ARE NOT EQUAL.")
         sys.exit()
 
